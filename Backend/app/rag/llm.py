@@ -6,13 +6,17 @@ from openai import OpenAI, RateLimitError
 ENV_PATH = Path(__file__).resolve().parents[2] / ".env"  # Backend/.env
 load_dotenv(dotenv_path=ENV_PATH)
 
-API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")
+MODEL   = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 if not API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is missing. Put it in Backend/.env")
+    raise RuntimeError("GEMINI_API_KEY is missing. Put it in Backend/.env")
 
-client = OpenAI(api_key=API_KEY)
+# Gemini exposes an OpenAI-compatible endpoint — no extra library needed
+client = OpenAI(
+    api_key=API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+)
 
 SYSTEM_PROMPT = (
     "Ti je asistenti informues i Spitalit Hygeia Tiranë.\n"
